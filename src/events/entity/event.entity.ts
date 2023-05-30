@@ -1,17 +1,17 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('event')
+@Entity('events')
 export class Event {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ length: 100 })
     name: string;
 
     @Column()
     description: string;
 
-    @Column()
+    @Column({ name: 'when_date' })
     when: Date;
 
     @Column()
