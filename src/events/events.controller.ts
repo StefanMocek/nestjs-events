@@ -1,22 +1,49 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from "@nestjs/common";
 import { CreateEventDto } from "./dto/create-event.dto";
 import { UpdateEventDto } from "./dto/update-event.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Event } from "./entity/event.entity";
+import { Repository } from "typeorm";
 
 @Controller('/events')
 export class EventsController {
+    constructor(
+        @InjectRepository(Event)
+        private readonly repository: Repository<Event>
+    ) { }
+
     @Get()
-    findAll() {}
+    async findAll() {
+        return await this.repository.find()
+    }
 
     @Get(':id')
-    findOne(@Param('id') id) {}
+    async findOne(@Param('id') id) {
+        return await this.repository.findOneBy({ id: id });
+    }
 
     @Post()
-    create(@Body() input: CreateEventDto) {}
+    async create(@Body() input: CreateEventDto) {
+        return await this.repository.save({
+            ...input,
+            when: new Date(input.when)
+        })
+    }
 
     @Patch(':id')
-    update(@Param('id') id, @Body() input: UpdateEventDto) {}
+    async update(@Param('id') id, @Body() input: UpdateEventDto) {
+        const event = await this.repository.findOneBy({ id: id });
+        return await this.repository.save({
+            ...event,
+            ...input,
+            when: input.when ? new Date(input.when) : event.when
+        })
+    }
 
     @Delete(':id')
     @HttpCode(204)
-    delete(@Param('id') id) {}
+    async delete(@Param('id') id) {
+        const event = await this.repository.findOneBy({ id: id });
+        await this.repository.remove(event);
+    }
 }
