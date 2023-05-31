@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, ValidationPipe } from "@nestjs/common";
 import { CreateEventDto } from "./dto/create-event.dto";
 import { UpdateEventDto } from "./dto/update-event.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -23,7 +23,7 @@ export class EventsController {
     }
 
     @Post()
-    async create(@Body() input: CreateEventDto) {
+    async create(@Body(new ValidationPipe({groups: ['create']})) input: CreateEventDto) {
         return await this.repository.save({
             ...input,
             when: new Date(input.when)
@@ -31,7 +31,7 @@ export class EventsController {
     }
 
     @Patch(':id')
-    async update(@Param('id') id, @Body() input: UpdateEventDto) {
+    async update(@Param('id') id, @Body(new ValidationPipe({groups: ['update']})) input: UpdateEventDto) {
         const event = await this.repository.findOneBy({ id: id });
         return await this.repository.save({
             ...event,
