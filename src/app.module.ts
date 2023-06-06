@@ -6,6 +6,7 @@ import { EventsModule } from './events/events.module';
 import { AppDummy } from './app.dummy';
 import { ConfigModule } from '@nestjs/config';
 import ormConfig from './config/orm.config';
+import ormConfigProd from './config/orm.config.prod';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import ormConfig from './config/orm.config';
       load: [ormConfig]
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: ormConfig
+      useFactory: process.env.NODE_ENV !== 'production'
+        ? ormConfig : ormConfigProd
     }),
     EventsModule
   ],
