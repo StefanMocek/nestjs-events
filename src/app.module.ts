@@ -12,7 +12,8 @@ import ormConfigProd from './config/orm.config.prod';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [ormConfig]
+      load: [ormConfig],
+      expandVariables: true
     }),
     TypeOrmModule.forRootAsync({
       useFactory: process.env.NODE_ENV !== 'production'
