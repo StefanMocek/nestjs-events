@@ -11,6 +11,12 @@ export class EventsService {
     private getEventsBaseQuery() {
         return this.eventsRepository
             .createQueryBuilder('e')
-            .orderBy('e.id', 'DESC')
+            .orderBy('e.id', 'DESC');
+    }
+
+    public async getEvent(id: number): Promise<Event> {
+        return await this.getEventsBaseQuery()
+            .andWhere('e.id = :id', { id })
+            .getOne();
     }
 }
