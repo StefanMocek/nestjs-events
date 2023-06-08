@@ -3,6 +3,7 @@ import { Repository } from "typeorm";
 import { Event } from "./entity/event.entity";
 import { Injectable, Logger } from "@nestjs/common";
 import { AttendeeAnswerEnum } from "./entity/attendee.entity";
+import { ListEvents, WhenEventFilter } from "./input/list-events";
 
 @Injectable()
 export class EventsService {
@@ -31,7 +32,7 @@ export class EventsService {
                 (qb) => qb
                     .where(
                         'attendee.answer = :answer',
-                        { answer: AttendeeAnswerEnum.Accepted}
+                        { answer: AttendeeAnswerEnum.Accepted }
                     )
             )
             .loadRelationCountAndMap(
@@ -41,7 +42,7 @@ export class EventsService {
                 (qb) => qb
                     .where(
                         'attendee.answer = :answer',
-                        { answer: AttendeeAnswerEnum.Maybe}
+                        { answer: AttendeeAnswerEnum.Maybe }
                     )
             )
             .loadRelationCountAndMap(
@@ -51,15 +52,53 @@ export class EventsService {
                 (qb) => qb
                     .where(
                         'attendee.answer = :answer',
-                        { answer: AttendeeAnswerEnum.Rejected}
+                        { answer: AttendeeAnswerEnum.Rejected }
                     )
             )
     }
 
+    public async getEventWithAttendeeCountFiltered(filter?: ListEvents) {
+        let query = this.getEventWithAttendeeCountQuery();
+
+        if (!filter) {
+            return await query.getMany()
+        }
+
+        if (filter.when) {
+            if (filter.when === WhenEventFilter.Today) {
+                query = query.andWhere(
+                    `e.when >= CURDATE() AND e.when <= CURDATE() + INTERVAL 1 DAY`
+                )
+            }
+        }
+
+        if (filter.when) {
+            if (filter.when === WhenEventFilter.Tommorow) {
+                query = query.andWhere(
+                    `e.when >= CURDATE() + INTERVAL 1 DAY AND e.when <= CURDATE() + INTERVAL 2 DAY`
+                )
+            }
+        }
+
+        if (filter.when) {
+            if (filter.when === WhenEventFilter.ThisWeek) {
+                query = query.andWhere('YEARWEEK(e.when, 1) = YEARWEEK(CURDATE(), 1)')
+            }
+        }
+
+        if (filter.when) {
+            if (filter.when === WhenEventFilter.NextWeek) {
+                query = query.andWhere('YEARWEEK(e.when, 1) = YEARWEEK(CURDATE(), 1) + 1')
+            }
+        }
+
+        return await query.getMany();
+    }
+
     public async getEvent(id: number): Promise<Event | undefined> {
-        const guery =  this.getEventWithAttendeeCountQuery()
+        const guery = this.getEventWithAttendeeCountQuery()
             .andWhere('e.id = :id', { id });
-            
+
         this.logger.debug(guery.getSql());
 
         return await guery.getOne();
