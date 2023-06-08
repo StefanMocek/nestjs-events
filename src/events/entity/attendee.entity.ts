@@ -22,4 +22,10 @@ export class Attendee {
         name: 'event_id'
     })
     event: Event;
+
+    @Column('enum', {
+        enum: AttendeeAnswerEnum,
+        default: AttendeeAnswerEnum.Accepted
+    })
+    answer: AttendeeAnswerEnum
 }
