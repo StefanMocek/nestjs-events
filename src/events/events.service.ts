@@ -65,7 +65,7 @@ export class EventsService {
         }
 
         if (filter.when) {
-            if (filter.when === WhenEventFilter.Today) {
+            if (filter.when == WhenEventFilter.Today) {
                 query = query.andWhere(
                     `e.when >= CURDATE() AND e.when <= CURDATE() + INTERVAL 1 DAY`
                 )
@@ -73,7 +73,7 @@ export class EventsService {
         }
 
         if (filter.when) {
-            if (filter.when === WhenEventFilter.Tommorow) {
+            if (filter.when == WhenEventFilter.Tommorow) {
                 query = query.andWhere(
                     `e.when >= CURDATE() + INTERVAL 1 DAY AND e.when <= CURDATE() + INTERVAL 2 DAY`
                 )
@@ -81,13 +81,13 @@ export class EventsService {
         }
 
         if (filter.when) {
-            if (filter.when === WhenEventFilter.ThisWeek) {
+            if (filter.when == WhenEventFilter.ThisWeek) {
                 query = query.andWhere('YEARWEEK(e.when, 1) = YEARWEEK(CURDATE(), 1)')
             }
         }
 
         if (filter.when) {
-            if (filter.when === WhenEventFilter.NextWeek) {
+            if (filter.when == WhenEventFilter.NextWeek) {
                 query = query.andWhere('YEARWEEK(e.when, 1) = YEARWEEK(CURDATE(), 1) + 1')
             }
         }
