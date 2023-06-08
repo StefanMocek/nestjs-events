@@ -18,8 +18,15 @@ export class EventsService {
             .orderBy('e.id', 'DESC');
     }
 
+    public getEventWithAttendeeCountQuery() {
+        return this.getEventsBaseQuery()
+            .loadRelationCountAndMap(
+                'e.attendeeCount', 'e.attendees'
+            )
+    }
+
     public async getEvent(id: number): Promise<Event | undefined> {
-        const guery =  this.getEventsBaseQuery()
+        const guery =  this.getEventWithAttendeeCountQuery()
             .andWhere('e.id = :id', { id });
             
         this.logger.debug(guery.getSql());
