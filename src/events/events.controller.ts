@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Logger, NotFoundException, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Logger, NotFoundException, Param, Patch, Post, Query, UsePipes, ValidationPipe } from "@nestjs/common";
 import { CreateEventDto } from "./input/create-event.dto";
 import { UpdateEventDto } from "./input/update-event.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -19,11 +19,17 @@ export class EventsController {
     ) { }
 
     @Get()
+    @UsePipes(new ValidationPipe({ transform: true }))
     async findAll(@Query() filter: ListEvents) {
-        this.logger.log('Hit the find route');
         const events = await this.eventsService
-            .getEventWithAttendeeCountFiltered(filter);
-        this.logger.debug(`Found ${events.length} events`);
+            .getEventsWithAttendeeCountFilteredPaginated(
+                filter,
+                {
+                    total: true,
+                    currentPage: filter.page,
+                    limit: 10
+                }
+            );
         return events;
     }
 
@@ -60,10 +66,10 @@ export class EventsController {
     @Delete(':id')
     @HttpCode(204)
     async delete(@Param('id') id) {
-        const event = await this.repository.findOneBy({ id: id });
-        if (!event) {
+        const result = await this.eventsService.deleteEvent(id)
+
+        if(result?.affected !== 1) {
             throw new NotFoundException()
-        };
-        await this.repository.remove(event);
+        }
     }
 }
