@@ -117,7 +117,7 @@ export class EventsService {
 
     public async deleteEvent(id: number): Promise<DeleteResult> {
         return await this.eventsRepository
-            .createQueryBuilder()
+            .createQueryBuilder('e')
             .delete()
             .where('id = :id', { id })
             .execute();
