@@ -1,5 +1,5 @@
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DeleteResult, Repository } from "typeorm";
 import { Event } from "./entity/event.entity";
 import { Injectable, Logger } from "@nestjs/common";
 import { AttendeeAnswerEnum } from "./entity/attendee.entity";
@@ -96,11 +96,11 @@ export class EventsService {
         return await query;
     }
 
-    public async getEventsWithAttendeeCountFilteredPaginated (
+    public async getEventsWithAttendeeCountFilteredPaginated(
         filter: ListEvents,
         paginationOptions: PaginationOptions
     ) {
-        return await paginate (
+        return await paginate(
             await this.getEventWithAttendeeCountFiltered(filter),
             paginationOptions
         )
@@ -113,5 +113,13 @@ export class EventsService {
         this.logger.debug(guery.getSql());
 
         return await guery.getOne();
+    }
+
+    public async deleteEvent(id: number): Promise<DeleteResult> {
+        return await this.eventsRepository
+            .createQueryBuilder()
+            .delete()
+            .where('id = :id', { id })
+            .execute();
     }
 }
