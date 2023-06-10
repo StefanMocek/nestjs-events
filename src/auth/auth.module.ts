@@ -1,10 +1,11 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./entity/user.entity";
-import { LocalStrategy } from "./local.strategy";
+import { LocalStrategy } from "./strategies/local.strategy";
 import { AuthController } from "./auth.controller";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthService } from "./auth.service";
+import { JwtStrategy } from "./strategies/jwt.strategy";
 
 @Module({
     imports: [
@@ -17,7 +18,7 @@ import { AuthService } from "./auth.service";
                 }
             })
         })],
-    providers: [LocalStrategy, AuthService],
+    providers: [LocalStrategy, JwtStrategy, AuthService],
     controllers: [AuthController]
 })
 export class AuthModule {
