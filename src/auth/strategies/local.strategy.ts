@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
@@ -27,7 +28,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         };
 
         // temporary. Password stored in DB 
-        if (password !== user.password) {
+        if (!(await bcrypt.compare(password, user.password))) {
             this.logger.debug('Wrong credentials');
             throw new UnauthorizedException();
         };
