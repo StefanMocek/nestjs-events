@@ -26,7 +26,7 @@ export class Event {
     @JoinColumn({ name: 'organizerId' })
     organizer: User;
 
-    @Column()
+    @Column({ nullable: true })
     organizerId: number;
 
     attendeeCount?: number;
