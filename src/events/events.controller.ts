@@ -6,6 +6,8 @@ import { Event } from "./entity/event.entity";
 import { Repository } from "typeorm";
 import { EventsService } from "./events.service";
 import { ListEvents } from "./input/list-events";
+import { CurrentUser } from "../auth/decorators/current-user.dacorator";
+import { User } from "../auth/entity/user.entity";
 
 @Controller('/events')
 export class EventsController {
@@ -43,11 +45,11 @@ export class EventsController {
     }
 
     @Post()
-    async create(@Body() input: CreateEventDto) {
-        return await this.repository.save({
-            ...input,
-            when: new Date(input.when)
-        })
+    async create(
+        @Body() input: CreateEventDto,
+        @CurrentUser() user: User
+    ) {
+        return await this.eventsService.createEvent(input, user)
     }
 
     @Patch(':id')
@@ -68,7 +70,7 @@ export class EventsController {
     async delete(@Param('id') id) {
         const result = await this.eventsService.deleteEvent(id)
 
-        if(result?.affected !== 1) {
+        if (result?.affected !== 1) {
             throw new NotFoundException()
         }
     }
