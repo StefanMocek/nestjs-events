@@ -7,6 +7,7 @@ import { ListEvents, WhenEventFilter } from "./input/list-events";
 import { PaginationOptions, paginate } from "../pagination/paginator";
 import { CreateEventDto } from "./input/create-event.dto";
 import { User } from "../auth/entity/user.entity";
+import { UpdateEventDto } from "./input/update-event.dto";
 
 @Injectable()
 export class EventsService {
@@ -122,6 +123,14 @@ export class EventsService {
             ...input,
             organizer: user,
             when: new Date(input.when)
+        })
+    }
+
+    public async updateEvent(event: Event, input: UpdateEventDto): Promise<Event> {
+        return await this.eventsRepository.save({
+            ...event,
+            ...input,
+            when: input.when ? new Date(input.when) : event.when
         })
     }
 

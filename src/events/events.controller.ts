@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Logger, NotFoundException, Param, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, Logger, NotFoundException, Param, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { CreateEventDto } from "./input/create-event.dto";
 import { UpdateEventDto } from "./input/update-event.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -15,9 +15,6 @@ export class EventsController {
     private readonly logger = new Logger(EventsController.name)
 
     constructor(
-        @InjectRepository(Event)
-        private readonly repository: Repository<Event>,
-
         private readonly eventsService: EventsService
     ) { }
 
@@ -55,25 +52,36 @@ export class EventsController {
     }
 
     @Patch(':id')
-    async update(@Param('id') id, @Body() input: UpdateEventDto) {
-        const event = await this.repository.findOneBy({ id: id });
+    @UseGuards(AuthGuardJwt)
+    async update(
+        @Param('id') id,
+        @Body() input: UpdateEventDto,
+        @CurrentUser() user: User
+    ) {
+        const event = await this.eventsService.getEvent(id);
         if (!event) {
             throw new NotFoundException()
         };
-        return await this.repository.save({
-            ...event,
-            ...input,
-            when: input.when ? new Date(input.when) : event.when
-        })
+        if (event.organizerId !== user.id) {
+            throw new ForbiddenException(null, `You are not authorized to change this event`)
+        }
+        return await this.eventsService.updateEvent(event, input)
     }
 
     @Delete(':id')
+    @UseGuards(AuthGuardJwt)
     @HttpCode(204)
-    async delete(@Param('id') id) {
-        const result = await this.eventsService.deleteEvent(id)
-
-        if (result?.affected !== 1) {
+    async delete(
+        @Param('id') id,
+        @CurrentUser() user: User
+    ) {
+        const event = await this.eventsService.getEvent(id);
+        if (!event) {
             throw new NotFoundException()
+        };
+        if (event.organizerId !== user.id) {
+            throw new ForbiddenException(null, `You are not authorized to remove this event`)
         }
+        await this.eventsService.deleteEvent(id)
     }
 }
