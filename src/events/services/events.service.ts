@@ -61,11 +61,11 @@ export class EventsService {
             )
     }
 
-    private async getEventWithAttendeeCountFiltered(filter?: ListEvents) {
+    private getEventWithAttendeeCountFilteredQuery(filter?: ListEvents) {
         let query = this.getEventWithAttendeeCountQuery();
 
         if (!filter) {
-            return await query;
+            return query;
         }
 
         if (filter.when) {
@@ -96,7 +96,7 @@ export class EventsService {
             }
         }
 
-        return await query;
+        return query;
     }
 
     public async getEventsWithAttendeeCountFilteredPaginated (
@@ -104,7 +104,7 @@ export class EventsService {
         paginationOptions: PaginationOptions
     ): Promise<PaginatedEvents> {
         return await paginate(
-            await this.getEventWithAttendeeCountFiltered(filter),
+            await this.getEventWithAttendeeCountFilteredQuery(filter),
             paginationOptions
         )
     }
