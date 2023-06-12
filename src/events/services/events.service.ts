@@ -109,7 +109,11 @@ export class EventsService {
         )
     }
 
-    public async getEvent(id: number): Promise<Event | undefined> {
+    public async findOne(id: number): Promise<Event | undefined> {
+        return await this.eventsRepository.findOneBy({id})
+    }
+
+    public async getEventWithAttendeeCount(id: number): Promise<Event | undefined> {
         const guery = this.getEventWithAttendeeCountQuery()
             .andWhere('e.id = :id', { id });
 

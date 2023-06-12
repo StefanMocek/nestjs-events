@@ -38,7 +38,7 @@ export class EventsController {
     @Get(':id')
     @UseInterceptors(ClassSerializerInterceptor)
     async findOne(@Param('id') id) {
-        const event = await this.eventsService.getEvent(id);
+        const event = await this.eventsService.getEventWithAttendeeCount(id);
         if (!event) {
             throw new NotFoundException()
         };
@@ -63,7 +63,7 @@ export class EventsController {
         @Body() input: UpdateEventDto,
         @CurrentUser() user: User
     ) {
-        const event = await this.eventsService.getEvent(id);
+        const event = await this.eventsService.findOne(id);
         if (!event) {
             throw new NotFoundException()
         };
@@ -80,7 +80,7 @@ export class EventsController {
         @Param('id') id,
         @CurrentUser() user: User
     ) {
-        const event = await this.eventsService.getEvent(id);
+        const event = await this.eventsService.findOne(id);
         if (!event) {
             throw new NotFoundException()
         };
