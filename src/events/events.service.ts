@@ -1,6 +1,6 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { DeleteResult, Repository } from "typeorm";
-import { Event } from "./entity/event.entity";
+import { Event, PaginatedEvents } from "./entity/event.entity";
 import { Injectable, Logger } from "@nestjs/common";
 import { AttendeeAnswerEnum } from "./entity/attendee.entity";
 import { ListEvents, WhenEventFilter } from "./input/list-events";
@@ -99,10 +99,10 @@ export class EventsService {
         return await query;
     }
 
-    public async getEventsWithAttendeeCountFilteredPaginated(
+    public async getEventsWithAttendeeCountFilteredPaginated (
         filter: ListEvents,
         paginationOptions: PaginationOptions
-    ) {
+    ): Promise<PaginatedEvents> {
         return await paginate(
             await this.getEventWithAttendeeCountFiltered(filter),
             paginationOptions
@@ -140,5 +140,22 @@ export class EventsService {
             .delete()
             .where('id = :id', { id })
             .execute();
+    }
+
+    public async getEventsOrganizedByUserIdPaginated (
+        userId: number,
+        paginationOptions: PaginationOptions
+    ): Promise<PaginatedEvents> {
+        return await paginate<Event>(
+            this.getEventsOrganizedByUserIdQuery(userId),
+            paginationOptions
+        );
+    }
+
+    private getEventsOrganizedByUserIdQuery (
+        userId: number
+    ) {
+        return this.getEventsBaseQuery()
+            .where('e.organizerId = :userId', {userId});
     }
 }
