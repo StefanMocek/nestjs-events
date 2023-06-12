@@ -21,6 +21,7 @@ export class EventsController {
 
     @Get()
     @UsePipes(new ValidationPipe({ transform: true }))
+    @UseInterceptors(ClassSerializerInterceptor)
     async findAll(@Query() filter: ListEvents) {
         const events = await this.eventsService
             .getEventsWithAttendeeCountFilteredPaginated(
@@ -46,6 +47,7 @@ export class EventsController {
 
     @Post()
     @UseGuards(AuthGuardJwt)
+    @UseInterceptors(ClassSerializerInterceptor)
     async create(
         @Body() input: CreateEventDto,
         @CurrentUser() user: User
@@ -55,6 +57,7 @@ export class EventsController {
 
     @Patch(':id')
     @UseGuards(AuthGuardJwt)
+    @UseInterceptors(ClassSerializerInterceptor)
     async update(
         @Param('id') id,
         @Body() input: UpdateEventDto,
