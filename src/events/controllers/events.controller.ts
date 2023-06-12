@@ -1,14 +1,14 @@
 import { Body, ClassSerializerInterceptor, Controller, Delete, ForbiddenException, Get, HttpCode, Logger, NotFoundException, Param, Patch, Post, Query, SerializeOptions, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
-import { CreateEventDto } from "./input/create-event.dto";
-import { UpdateEventDto } from "./input/update-event.dto";
+import { CreateEventDto } from "../input/create-event.dto";
+import { UpdateEventDto } from "../input/update-event.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Event } from "./entity/event.entity";
+import { Event } from "../entity/event.entity";
 import { Repository } from "typeorm";
-import { EventsService } from "./events.service";
-import { ListEvents } from "./input/list-events";
-import { CurrentUser } from "../auth/decorators/current-user.dacorator";
-import { User } from "../auth/entity/user.entity";
-import { AuthGuardJwt } from "../auth/decorators/auth-guard.jwt";
+import { EventsService } from "../services/events.service";
+import { ListEvents } from "../input/list-events";
+import { CurrentUser } from "../../auth/decorators/current-user.dacorator";
+import { User } from "../../auth/entity/user.entity";
+import { AuthGuardJwt } from "../../auth/decorators/auth-guard.jwt";
 
 @Controller('/events')
 @SerializeOptions({ strategy: 'excludeAll' })
