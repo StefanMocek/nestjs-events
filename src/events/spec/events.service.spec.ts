@@ -27,7 +27,17 @@ describe('EventService', () => {
 
         service = module.get<EventsService>(EventsService);
         repository = module.get<Repository<Event>>(getRepositoryToken(Event));
-    })
+    });
 
-    
-})
+    describe('updateEvent', () => {
+        it('Should update the event', async () => {
+            const repoSpy = jest.spyOn(repository, 'save')
+                .mockResolvedValue({ id: 1 } as Event);
+
+            // only updateEvent method isnt a mock
+            expect(service.updateEvent(new Event({ id: 1 }), { name: 'test name' }))
+                .resolves.toEqual({ id: 1 })
+            expect(repoSpy).toBeCalledWith({ id: 1, name: 'test name' })
+        });
+    });
+});
