@@ -2,7 +2,7 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import * as request from 'supertest';
 import { AppModule } from "../src/app.module";
-import { Connection } from "typeorm";
+import { DataSource } from "typeorm";
 import * as fs from 'fs';
 import * as path from 'path';
 import { User } from "../src/auth/entity/user.entity";
@@ -10,7 +10,7 @@ import { AuthService } from "../src/auth/auth.service";
 
 let app: INestApplication;
 let mod: TestingModule;
-let connection: Connection;
+let connection: DataSource;
 
 const loadFixtures = async (sqlFileName: string) => {
     const sql = fs.readFileSync(path.join(__dirname, 'fixtures', sqlFileName), 'utf8');
@@ -42,7 +42,7 @@ describe('Events (e2e)', () => {
 
         await app.init();
 
-        connection = app.get(Connection);
+        connection = app.get(DataSource);
     });
 
     afterEach(async () => {
