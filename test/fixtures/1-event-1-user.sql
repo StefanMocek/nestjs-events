@@ -1,7 +1,7 @@
 INSERT INTO
     `user` (
         `id`,
-        `username`,
+        `userName`,
         `password`,
         `email`,
         `firstName`,
