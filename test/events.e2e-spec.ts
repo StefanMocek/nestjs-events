@@ -1,35 +1,24 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import * as request from 'supertest';
-import { AppModule } from "../src/app.module";
+import * as request from "supertest";
 import { DataSource } from "typeorm";
-import * as fs from 'fs';
-import * as path from 'path';
-import { User } from "../src/auth/entity/user.entity";
-import { AuthService } from "../src/auth/auth.service";
+import { AppModule } from "./../src/app.module";
+import { User } from "./../src/auth/entity/user.entity";
+import { loadFixtures as loadFixturesBase, tokenForUser as tokenForUserBase } from "./utils";
 
 let app: INestApplication;
 let mod: TestingModule;
 let connection: DataSource;
 
-const loadFixtures = async (sqlFileName: string) => {
-    const sql = fs.readFileSync(path.join(__dirname, 'fixtures', sqlFileName), 'utf8');
+const loadFixtures = async (sqlFileName: string) =>
+    loadFixturesBase(connection, sqlFileName);
 
-    const queryRunner = connection.driver.createQueryRunner('master');
-
-    for (const c of sql.split(';')) {
-        await queryRunner.query(c);
-    };
-};
-
-export const tokenForUser = (
+const tokenForUser = (
     user: Partial<User> = {
         id: 1,
         userName: 'e2e-test',
     }
-): string => {
-    return app.get(AuthService).getTokenForUser(user as User);
-};
+): string => tokenForUserBase(app, user);
 
 describe('Events (e2e)', () => {
     beforeEach(async () => {
@@ -49,7 +38,7 @@ describe('Events (e2e)', () => {
         await app.close();
     });
 
-    it('Should return an empty list of events', async () => {
+    it('should return an empty list of events', async () => {
         return request(app.getHttpServer())
             .get('/events')
             .expect(200)
@@ -58,7 +47,7 @@ describe('Events (e2e)', () => {
             });
     });
 
-    it('Should return a single event', async () => {
+    it('should return a single event', async () => {
         await loadFixtures('1-event-1-user.sql');
 
         return request(app.getHttpServer())
@@ -70,7 +59,7 @@ describe('Events (e2e)', () => {
             })
     });
 
-    it('Should return a list of (2) events', async () => {
+    it('should return a list of (2) events', async () => {
         await loadFixtures('2-events-1-user.sql');
 
         return request(app.getHttpServer())
@@ -84,14 +73,14 @@ describe('Events (e2e)', () => {
             })
     });
 
-    it('Should throw a an error when creating event being unauthenticated', () => {
+    it('should throw a an error when creating event being unauthenticated', () => {
         return request(app.getHttpServer())
             .post('/events')
             .send({})
             .expect(401);
     });
 
-    it('Should throw an error when creating event with wrong input', async () => {
+    it('should throw an error when creating event with wrong input', async () => {
         await loadFixtures('1-user.sql');
 
         return request(app.getHttpServer())
@@ -114,7 +103,7 @@ describe('Events (e2e)', () => {
             });
     });
 
-    it('Should create an event', async () => {
+    it('should create an event', async () => {
         await loadFixtures('1-user.sql');
         const when = (new Date).toISOString();
 
@@ -143,7 +132,7 @@ describe('Events (e2e)', () => {
             });
     });
 
-    it('Should throw an error when changing non existing event', () => {
+    it('should throw an error when changing non existing event', () => {
         return request(app.getHttpServer())
             .put('/events/100')
             .set('Authorization', `Bearer ${tokenForUser()}`)
@@ -151,7 +140,7 @@ describe('Events (e2e)', () => {
             .expect(404);
     });
 
-    it('Should throw an error when changing an event of other user', async () => {
+    it('should throw an error when changing an event of other user', async () => {
         await loadFixtures('1-event-2-users.sql');
 
         return request(app.getHttpServer())
@@ -163,7 +152,7 @@ describe('Events (e2e)', () => {
             .expect(403);
     });
 
-    it('Should update an event name', async () => {
+    it('should update an event name', async () => {
         await loadFixtures('1-event-1-user.sql');
 
         return request(app.getHttpServer())
@@ -177,7 +166,7 @@ describe('Events (e2e)', () => {
             });
     });
 
-    it('Should remove an event', async () => {
+    it('should remove an event', async () => {
         await loadFixtures('1-event-1-user.sql');
 
         return request(app.getHttpServer())
@@ -190,7 +179,7 @@ describe('Events (e2e)', () => {
             })
     });
 
-    it('Should throw an error when removing an event of other user', async () => {
+    it('should throw an error when removing an event of other user', async () => {
         await loadFixtures('1-event-2-users.sql');
 
         return request(app.getHttpServer())
@@ -199,7 +188,7 @@ describe('Events (e2e)', () => {
             .expect(403);
     });
 
-    it('Should throw an error when removing non existing event', async () => {
+    it('should throw an error when removing non existing event', async () => {
         await loadFixtures('1-user.sql');
 
         return request(app.getHttpServer())
