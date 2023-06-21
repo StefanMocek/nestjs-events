@@ -3,5 +3,5 @@ import { AttendeeAnswerEnum } from "../entity/attendee.entity";
 
 export class CreateAttendeeDto {
     @IsEnum(AttendeeAnswerEnum)
-    asnwer: AttendeeAnswerEnum;
+    answer: AttendeeAnswerEnum;
 }
