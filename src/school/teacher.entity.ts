@@ -5,6 +5,10 @@ import { Field, ObjectType } from "@nestjs/graphql";
 @Entity()
 @ObjectType()
 export class Teacher {
+    constructor(partial?: Partial<Teacher>) {
+        Object.assign(this, partial);
+    }
+
     @PrimaryGeneratedColumn()
     @Field()
     id: number;
@@ -16,5 +20,5 @@ export class Teacher {
     
     @ManyToMany(() => Subject, (subject) => subject.teachers)
     @Field(() => [Subject])
-    subjects: Subject[];
+    subjects: Promise<Subject[]>;
 }

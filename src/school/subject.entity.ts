@@ -17,5 +17,5 @@ export class Subject {
         () => Teacher, (teacher) => teacher.subjects, { cascade: true }
     )
     @JoinTable()
-    teachers: Teacher[];
+    teachers: Promise<Teacher[]>;
 }
