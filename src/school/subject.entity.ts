@@ -1,11 +1,15 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Teacher } from './teacher.entity';
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @Entity()
+@ObjectType()
 export class Subject {
     @PrimaryGeneratedColumn()
+    @Field()
     id: number;
 
+    @Field()
     @Column()
     name: string;
 
