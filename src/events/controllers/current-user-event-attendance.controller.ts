@@ -1,17 +1,31 @@
-import { Body, ClassSerializerInterceptor, Controller, DefaultValuePipe, Get, NotFoundException, Param, ParseIntPipe, Put, Query, SerializeOptions, UseGuards, UseInterceptors } from "@nestjs/common";
-import { EventsService } from "../services/events.service";
-import { AttendeesService } from "../services/attendees.service";
-import { CreateAttendeeDto } from "../input/create-attendee.dto";
-import { User } from "../../auth/entity/user.entity";
-import { CurrentUser } from "../../auth/decorators/current-user.dacorator";
-import { AuthGuardJwt } from "../../auth/decorators/auth-guard.jwt";
+import {
+    Body,
+    ClassSerializerInterceptor,
+    Controller,
+    DefaultValuePipe,
+    Get,
+    NotFoundException,
+    Param,
+    ParseIntPipe,
+    Put,
+    Query,
+    SerializeOptions,
+    UseGuards,
+    UseInterceptors,
+} from '@nestjs/common';
+import { EventsService } from '../services/events.service';
+import { AttendeesService } from '../services/attendees.service';
+import { AuthGuardJwt } from '../../auth/decorators/auth-guard.jwt';
+import { CurrentUser } from '../../auth/decorators/current-user.dacorator';
+import { User } from '../../auth/entity/user.entity';
+import { CreateAttendeeDto } from '../input/create-attendee.dto';
 
 @Controller('events-attendance')
 @SerializeOptions({ strategy: 'excludeAll' })
 export class CurrentUserEventAttendanceController {
     constructor(
         private readonly eventsService: EventsService,
-        private readonly attendeesService: AttendeesService
+        private readonly attendeesService: AttendeesService,
     ) { }
 
     @Get()
@@ -19,12 +33,12 @@ export class CurrentUserEventAttendanceController {
     @UseInterceptors(ClassSerializerInterceptor)
     async findAll(
         @CurrentUser() user: User,
-        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     ) {
         return await this.eventsService.getEventsAttendedByUserIdPaginated(
             user.id,
-            { currentPage: page, limit: 5 }
-        )
+            { limit: 6, currentPage: page },
+        );
     }
 
     @Get(':eventId')
@@ -32,25 +46,28 @@ export class CurrentUserEventAttendanceController {
     @UseInterceptors(ClassSerializerInterceptor)
     async findOne(
         @Param('eventId', ParseIntPipe) eventId: number,
-        @CurrentUser() user: User
+        @CurrentUser() user: User,
     ) {
-        const attendee = await this.attendeesService.findOneByEventIdAndUserId(eventId, user.id)
+        const attendee = await this.attendeesService.findOneByEventIdAndUserId(
+            eventId,
+            user.id,
+        );
 
         if (!attendee) {
-            throw new NotFoundException()
+            throw new NotFoundException();
         }
 
         return attendee;
     }
 
-    @Put(':eventId')
+    @Put('/:eventId')
     @UseGuards(AuthGuardJwt)
     @UseInterceptors(ClassSerializerInterceptor)
     async createOrUpdate(
         @Param('eventId', ParseIntPipe) eventId: number,
         @Body() input: CreateAttendeeDto,
-        @CurrentUser() user: User
+        @CurrentUser() user: User,
     ) {
-        return await this.attendeesService.createOrUpdate(input, eventId, user.id)
+        return this.attendeesService.createOrUpdate(input, eventId, user.id);
     }
 }
