@@ -1,11 +1,11 @@
+import { Logger } from "@nestjs/common";
 import { Args, Int, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import { Teacher } from "./teacher.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { TeacherAddInput } from "./input/teacher-add.input";
-import { Logger } from "@nestjs/common";
-import { TeacherEditInput } from "./input/teacher-edit.input";
-import { EntityWithId } from "./school.types";
+import { Teacher } from "../enities";
+import { TeacherAddInput } from "../input/teacher-add.input";
+import { TeacherEditInput } from "../input/teacher-edit.input";
+import { EntityWithId } from "../school.types";
 
 @Resolver(() => Teacher)
 export class TeacherResolver {

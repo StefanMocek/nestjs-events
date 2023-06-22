@@ -1,13 +1,16 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Subject } from './subject.entity';
-import { Teacher } from './teacher.entity';
-import { TeacherResolver } from "./teacher.resolver";
+import { Subject, Teacher } from './enities';
+import { TeacherResolver } from "./resolvers/teacher.resolver";
+import { CourseResolver } from "./resolvers/course.resolver";
+import { SubjectResolver } from "./resolvers/subject.resolver";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Subject, Teacher])],
-  providers:[
-    TeacherResolver
+  providers: [
+    TeacherResolver,
+    CourseResolver,
+    SubjectResolver,
   ],
   controllers: []
 })
