@@ -17,17 +17,6 @@ export class userController {
 
     @Post()
     async create(@Body() createUserDto: CreateUserDto) {
-       const existingUser = await this.userRepository.findOne({
-            where: [
-                { userName: createUserDto.userName },
-                { email: createUserDto.email }
-            ]
-        })
-
-        if (existingUser) {
-            throw new BadRequestException(['Username or email is already taken'])
-        }
-
         const user = await this.userService.create(createUserDto);
 
         return {
