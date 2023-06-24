@@ -1,10 +1,10 @@
 import { ClassSerializerInterceptor, Controller, Get, Post, SerializeOptions, UseGuards, UseInterceptors } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { AuthService } from "./auth.service";
-import { CurrentUser } from "./decorators/current-user.dacorator";
-import { User } from "./entity/user.entity";
-import { AuthGuardLocal } from "./decorators/auth-guard.local";
-import { AuthGuardJwt } from "./decorators/auth-guard.jwt";
+import { AuthService } from "../services/auth.service";
+import { CurrentUser } from "../decorators/current-user.dacorator";
+import { User } from "../entity/user.entity";
+import { AuthGuardLocal } from "../decorators/auth-guard.local";
+import { AuthGuardJwt } from "../decorators/auth-guard.jwt";
 
 @Controller('auth')
 @SerializeOptions({ strategy: 'excludeAll' })
