@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import { Args, Int, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -6,6 +6,7 @@ import { Teacher } from "../enities";
 import { TeacherAddInput } from "../input/teacher-add.input";
 import { TeacherEditInput } from "../input/teacher-edit.input";
 import { EntityWithId } from "../school.types";
+import { AuthGuardJwtGql } from "src/auth/decorators/auth-guard.jwt.gql";
 
 @Resolver(() => Teacher)
 export class TeacherResolver {
@@ -34,6 +35,7 @@ export class TeacherResolver {
     }
 
     @Mutation(() => Teacher, { name: 'teacherAdd' })
+    @UseGuards(AuthGuardJwtGql)
     public async add(
         @Args('input', { type: () => TeacherAddInput })
         input: TeacherAddInput
@@ -42,6 +44,7 @@ export class TeacherResolver {
     }
 
     @Mutation(() => Teacher, { name: 'teacherEdit' })
+    @UseGuards(AuthGuardJwtGql)
     public async edit(
         @Args('id', { type: () => Int })
         id: number,
@@ -59,6 +62,7 @@ export class TeacherResolver {
     }
 
     @Mutation(() => EntityWithId, { name: 'teacherDelete' })
+    @UseGuards(AuthGuardJwtGql)
     public async delete(
         @Args('id', { type: () => Int })
         id: number,
