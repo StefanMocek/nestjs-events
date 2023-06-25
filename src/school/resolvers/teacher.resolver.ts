@@ -2,11 +2,12 @@ import { Logger, UseGuards } from "@nestjs/common";
 import { Args, Int, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Teacher } from "../enities";
+import { PaginatedTeachers, Teacher } from "../enities";
 import { TeacherAddInput } from "../input/teacher-add.input";
 import { TeacherEditInput } from "../input/teacher-edit.input";
 import { EntityWithId } from "../school.types";
 import { AuthGuardJwtGql } from "../../auth/decorators/auth-guard.jwt.gql";
+import { paginate } from "../../pagination/paginator";
 
 @Resolver(() => Teacher)
 export class TeacherResolver {
@@ -17,9 +18,12 @@ export class TeacherResolver {
         private readonly teacherRepository: Repository<Teacher>
     ) { }
 
-    @Query(() => [Teacher])
-    public async reachers(): Promise<Teacher[]> {
-        return await this.teacherRepository.find();
+    @Query(() => PaginatedTeachers)
+    public async reachers(): Promise<PaginatedTeachers> {
+        return paginate<Teacher, PaginatedTeachers>(
+            this.teacherRepository.createQueryBuilder(),
+            PaginatedTeachers
+        );
     }
 
     @Query(() => Teacher)

@@ -34,7 +34,6 @@ export function Paginated<T>(classRef: Type) {
     return PaginationResult<T>
 }
 
-
 export async function paginate<T, K>(
     qb: SelectQueryBuilder<T>,
     classRef: Type<K>,
