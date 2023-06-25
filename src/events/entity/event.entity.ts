@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
 import { Attendee } from "./attendee.entity";
 import { User } from "../../auth/entity/user.entity";
 import { Expose } from "class-transformer";
-import { PaginationResult } from "src/pagination/paginator";
+import { Paginated } from "../../pagination/paginator";
 
 @Entity('events')
 export class Event {
@@ -53,4 +53,4 @@ export class Event {
     attendeeAccepted?: number;
 }
 
-export type PaginatedEvents = PaginationResult<Event>;
+export class PaginatedEvents extends Paginated<Event>(Event) { };
