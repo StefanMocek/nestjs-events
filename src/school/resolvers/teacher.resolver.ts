@@ -6,7 +6,7 @@ import { Teacher } from "../enities";
 import { TeacherAddInput } from "../input/teacher-add.input";
 import { TeacherEditInput } from "../input/teacher-edit.input";
 import { EntityWithId } from "../school.types";
-import { AuthGuardJwtGql } from "src/auth/decorators/auth-guard.jwt.gql";
+import { AuthGuardJwtGql } from "../../auth/decorators/auth-guard.jwt.gql";
 
 @Resolver(() => Teacher)
 export class TeacherResolver {
